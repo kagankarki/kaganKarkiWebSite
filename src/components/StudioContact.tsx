@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { ArrowUpRight, Check, Copy, Globe, Mail } from 'lucide-react'
 
 const EMAIL = 'hello@prisma-studio.com'
