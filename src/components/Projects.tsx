@@ -112,7 +112,7 @@ function WaxVisual() {
         transition={{ duration: 1.4, ease: EASE_OUT, delay: 0.2 }}
         className="absolute bottom-[2%] left-0 w-[34%]"
       >
-        <PhoneFrame src="/shots/waxmobi-m.webp" className="aspect-[9/19]" />
+        <PhoneFrame src="/shots/waxmobi-app.webp" alt="WaxMobi uygulaması giriş ekranı" className="aspect-[9/19]" />
       </motion.div>
       <motion.img
         src="/logos/waxmobi.webp"
