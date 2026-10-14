@@ -18,17 +18,15 @@ function pickFrames() {
 }
 
 const RANGES = [
-  [0.02, 0.1, 0.24, 0.32],
-  [0.36, 0.44, 0.56, 0.64],
-  [0.66, 0.72, 0.8, 0.86],
+  [0.02, 0.1, 0.3, 0.4],
+  [0.6, 0.68, 0.8, 0.86],
 ]
-const COLORS = ['text-accent', 'text-sky', 'text-coral']
+const COLORS = ['text-accent', 'text-coral']
 
 const COPY = {
   tr: {
     lines: [
       { text: 'Her şey bir laptop', accent: 've bir fikirle başlıyor.' },
-      { text: 'Ankara’dan,', accent: 'gerçek kullanıcılara.' },
       { text: 'Hadi ekranın', accent: 'içine girelim.' },
     ],
     frame: 'KARE',
@@ -37,7 +35,6 @@ const COPY = {
   en: {
     lines: [
       { text: 'It all starts with a laptop', accent: 'and an idea.' },
-      { text: 'From Ankara,', accent: 'to real users.' },
       { text: 'Let’s dive', accent: 'into the screen.' },
     ],
     frame: 'FRAME',
