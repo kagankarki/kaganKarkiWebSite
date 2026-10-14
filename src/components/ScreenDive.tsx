@@ -4,7 +4,8 @@ import { motion, useMotionValueEvent, useScroll, useSpring, useTransform, type M
 
 // The camera move into the laptop screen, played by scroll. Sources live in
 // assets/intro (241 frames, 1940px); decoding all of them takes ~2 GB, which
-// crashes iOS Safari, so phones get every 3rd frame at 720px and desktops
+// crashes iOS Safari, so phones get every 3rd frame as a 640x1068 centre crop
+// (the only part a portrait screen shows, at full resolution) and desktops
 // every 2nd frame at 1440px.
 const FRAME_SETS = {
   mobile: { base: '/frames/m/', count: 81 },
