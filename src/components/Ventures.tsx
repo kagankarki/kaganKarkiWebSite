@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
-import { ArrowUpRight, Bot, Database, Layers, MapPin, MessageCircle, ShieldCheck } from 'lucide-react'
+import { ArrowUpRight, Bot, Database, Layers } from 'lucide-react'
 import { EASE_OUT } from '../lib/motion'
 import { BrowserFrame, ExplorienceMark, PhoneFrame } from './ui/Frames'
 import { Eyebrow } from './ui/Reveal'
@@ -26,7 +26,6 @@ const COPY = {
       role: 'Kurucu',
       title: ['Maçı nerede', 'izliyoruz?'],
       body: 'Galatasaray, Fenerbahçe, Beşiktaş ve Trabzonspor maçlarını veren mekanları bulduğun platform. Semtini seç, mekanı bul, yerini WhatsApp’tan tek mesajla ayırt.',
-      features: ['Takım, semt ve tarih filtresi', 'WhatsApp’tan tek mesajla rezervasyon', 'Taraftar yorumlarıyla doğrulanan mekanlar'],
       shot2: 'neredemac.com · Bu haftanın maçları',
     },
   },
@@ -49,7 +48,6 @@ const COPY = {
       role: 'Founder',
       title: ['Where are we', 'watching the match?'],
       body: 'The platform for finding venues that show Galatasaray, Fenerbahçe, Beşiktaş and Trabzonspor matches. Pick your district, find a spot and book it with a single WhatsApp message.',
-      features: ['Filter by team, district and date', 'Book with a single WhatsApp message', 'Venues verified by fan reviews'],
       shot2: 'neredemac.com · This week’s matches',
     },
   },
@@ -204,24 +202,12 @@ function NeredemacPanel() {
                 </motion.div>
               ))}
             </div>
-          </div>
-
-          <div className="space-y-2.5">
-            {[
-              { icon: MapPin, t: n.features[0] },
-              { icon: MessageCircle, t: n.features[1] },
-              { icon: ShieldCheck, t: n.features[2] },
-            ].map(({ icon: Icon, t }) => (
-              <p key={t} className="flex items-center gap-3 text-sm text-white/85">
-                <Icon className="h-4 w-4 text-[#3ccf86]" /> {t}
-              </p>
-            ))}
             <a
               href="https://www.neredemac.com/"
               target="_blank"
               rel="noreferrer"
               data-cursor={c.visit}
-              className="group !mt-6 inline-flex items-center gap-3 rounded-full bg-[#3ccf86] py-2 pl-5 pr-2 text-sm font-semibold text-[#06210f]"
+              className="group mt-8 inline-flex items-center gap-3 rounded-full bg-[#3ccf86] py-2 pl-5 pr-2 text-sm font-semibold text-[#06210f]"
             >
               neredemac.com
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#06210f] text-[#3ccf86] transition-transform duration-500 group-hover:rotate-45">

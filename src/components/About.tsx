@@ -135,7 +135,7 @@ export default function About() {
   ]
 
   return (
-    <section id="hakkimda" className="relative z-20 -mt-px bg-cream text-ink">
+    <section id="hakkimda" data-cursor-theme="light" className="relative z-20 -mt-px bg-cream text-ink">
       <div className="mx-auto max-w-7xl px-5 py-24 sm:px-10 sm:py-32">
         <Eyebrow className="text-ink/60">{c.eyebrow}</Eyebrow>
 
@@ -217,6 +217,7 @@ export default function About() {
                   <FadeUp key={n.key} delay={i * 0.1}>
                     <Tag
                       {...(n.href ? { href: n.href, target: '_blank', rel: 'noreferrer', 'data-cursor': c.visit } : {})}
+                      data-cursor-theme={n.light ? 'light' : 'dark'}
                       className={`group relative flex items-center gap-5 overflow-hidden rounded-3xl p-5 transition-transform duration-500 hover:-translate-y-1 sm:p-6 ${
                         n.light ? 'border border-ink/10 bg-white' : `${n.bg} text-white`
                       }`}

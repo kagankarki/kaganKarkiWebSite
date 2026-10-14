@@ -62,7 +62,7 @@ export default function Contact() {
   }
 
   return (
-    <footer id="iletisim" className="relative overflow-hidden rounded-t-[2.5rem] bg-accent text-ink sm:rounded-t-[4rem]">
+    <footer id="iletisim" data-cursor-theme="light" className="relative overflow-hidden rounded-t-[2.5rem] bg-accent text-ink sm:rounded-t-[4rem]">
       <div className="grain pointer-events-none absolute inset-0 opacity-[0.1]" />
       <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-24 sm:px-10 sm:pt-36">
         <Eyebrow className="text-ink/60 [&>span:first-child]:bg-ink">{c.eyebrow}</Eyebrow>
