@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useCopy } from '../i18n'
 import { motion, useMotionValueEvent, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 
 // The 241-frame camera move into the laptop screen, played by scroll.
@@ -7,16 +8,47 @@ const FRAMES = Object.entries(frameModules)
   .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
   .map(([, url]) => url)
 
-const LINES = [
-  { text: 'Her şey bir laptop', accent: 've bir fikirle başlıyor.', range: [0.02, 0.1, 0.24, 0.32] },
-  { text: 'Ankara’dan,', accent: 'gerçek kullanıcılara.', range: [0.36, 0.44, 0.56, 0.64] },
-  { text: 'Hadi ekranın', accent: 'içine girelim.', range: [0.66, 0.72, 0.8, 0.86] },
+const RANGES = [
+  [0.02, 0.1, 0.24, 0.32],
+  [0.36, 0.44, 0.56, 0.64],
+  [0.66, 0.72, 0.8, 0.86],
 ]
+const COLORS = ['text-accent', 'text-sky', 'text-coral']
 
-function Line({ line, progress }: { line: (typeof LINES)[number]; progress: MotionValue<number> }) {
-  const opacity = useTransform(progress, line.range, [0, 1, 1, 0])
-  const y = useTransform(progress, line.range, [40, 0, 0, -40])
-  const filter = useTransform(progress, line.range, ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(10px)'])
+const COPY = {
+  tr: {
+    lines: [
+      { text: 'Her şey bir laptop', accent: 've bir fikirle başlıyor.' },
+      { text: 'Ankara’dan,', accent: 'gerçek kullanıcılara.' },
+      { text: 'Hadi ekranın', accent: 'içine girelim.' },
+    ],
+    frame: 'KARE',
+    label: 'Laptop ekranına giriş animasyonu',
+  },
+  en: {
+    lines: [
+      { text: 'It all starts with a laptop', accent: 'and an idea.' },
+      { text: 'From Ankara,', accent: 'to real users.' },
+      { text: 'Let’s dive', accent: 'into the screen.' },
+    ],
+    frame: 'FRAME',
+    label: 'Scroll animation diving into the laptop screen',
+  },
+}
+
+function Line({
+  line,
+  index,
+  progress,
+}: {
+  line: { text: string; accent: string }
+  index: number
+  progress: MotionValue<number>
+}) {
+  const range = RANGES[index]
+  const opacity = useTransform(progress, range, [0, 1, 1, 0])
+  const y = useTransform(progress, range, [40, 0, 0, -40])
+  const filter = useTransform(progress, range, ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(10px)'])
   return (
     <motion.h2
       style={{ opacity, y, filter }}
@@ -24,12 +56,13 @@ function Line({ line, progress }: { line: (typeof LINES)[number]; progress: Moti
     >
       {line.text}
       <br />
-      <span className="font-serif font-normal italic text-accent">{line.accent}</span>
+      <span className={`font-serif font-normal italic ${COLORS[index]}`}>{line.accent}</span>
     </motion.h2>
   )
 }
 
 export default function ScreenDive({ ready }: { ready: boolean }) {
+  const c = useCopy(COPY)
   const ref = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imagesRef = useRef<HTMLImageElement[]>([])
@@ -105,7 +138,7 @@ export default function ScreenDive({ ready }: { ready: boolean }) {
   })
 
   return (
-    <section ref={ref} className="relative h-[320vh] bg-ink" aria-label="Laptop ekranına giriş animasyonu">
+    <section ref={ref} className="relative h-[320vh] bg-ink" aria-label={c.label}>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
         <motion.div
@@ -113,13 +146,13 @@ export default function ScreenDive({ ready }: { ready: boolean }) {
           className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink via-transparent to-ink"
         />
 
-        {LINES.map((l) => (
-          <Line key={l.text} line={l} progress={scrollYProgress} />
+        {c.lines.map((l, i) => (
+          <Line key={i} line={l} index={i} progress={scrollYProgress} />
         ))}
 
         <div className="absolute bottom-6 right-6 hidden items-center gap-2 rounded-full bg-black/50 px-4 py-2 font-mono text-[11px] text-cream/70 backdrop-blur-md md:flex">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
-          KARE {String(frame).padStart(3, '0')} / {FRAMES.length}
+          {c.frame} {String(frame).padStart(3, '0')} / {FRAMES.length}
         </div>
 
         <motion.div style={{ opacity: creamOpacity }} className="pointer-events-none absolute inset-0 bg-cream" />

@@ -1,5 +1,6 @@
 import { Star } from 'lucide-react'
 import { ExplorienceMark } from './ui/Frames'
+import { useCopy } from '../i18n'
 
 const LOGOS = [
   { name: 'Gazi Üniversitesi', node: <img src="/logos/gazi-logo.png" alt="" className="h-9 w-9" /> },
@@ -11,15 +12,19 @@ const LOGOS = [
   { name: 'Letfash', node: <img src="/logos/letfash.webp" alt="" className="h-8 w-8 rounded-lg" /> },
 ]
 
-const WORDS = ['Web', 'Flutter', 'Yapay Zeka', 'Ürün Tasarımı', 'Girişimcilik', 'Mobil', 'Kurumsal Sistemler', 'Startup']
+const COPY = {
+  tr: { words: ['Web', 'Flutter', 'Yapay Zeka', 'Ürün Tasarımı', 'Girişimcilik', 'Mobil', 'Kurumsal Sistemler', 'Startup'], label: 'Çalıştığım kurumlar ve markalar' },
+  en: { words: ['Web', 'Flutter', 'AI', 'Product Design', 'Entrepreneurship', 'Mobile', 'Enterprise Systems', 'Startups'], label: 'Organizations and brands I work with' },
+}
 
 export default function LogoMarquee() {
+  const c = useCopy(COPY)
   return (
-    <section className="relative z-30 -my-16 overflow-hidden py-16" aria-label="Çalıştığım kurumlar ve markalar">
+    <section className="relative z-30 -my-16 overflow-hidden py-16" aria-label={c.label}>
       {/* Accent word band */}
       <div className="relative z-10 -rotate-2 bg-accent py-4 text-ink">
         <div className="marquee flex w-max gap-10 whitespace-nowrap" style={{ ['--marquee-duration' as string]: '30s' }}>
-          {[...WORDS, ...WORDS].map((w, i) => (
+          {[...c.words, ...c.words].map((w, i) => (
             <span key={i} className="flex items-center gap-10 font-display text-2xl font-bold uppercase tracking-tight sm:text-4xl">
               {w}
               <span className="text-xl">✦</span>

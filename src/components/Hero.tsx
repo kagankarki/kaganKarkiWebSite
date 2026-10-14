@@ -11,8 +11,31 @@ import {
 import { ArrowDown, ArrowUpRight } from 'lucide-react'
 import { EASE_OUT, scrollToId } from '../lib/motion'
 import Magnetic from './ui/Magnetic'
+import { useCopy } from '../i18n'
 
-const ROLES = ['web platformları', 'mobil uygulamalar', 'yapay zeka ürünleri', 'girişimler']
+const COPY = {
+  tr: {
+    eyebrow: 'Yazılım Mühendisi · Girişimci · Ankara',
+    lead: 'Gerçek kullanıcılar için',
+    roles: ['web platformları', 'mobil uygulamalar', 'yapay zeka ürünleri', 'girişimler'],
+    suffix: ' geliştiriyorum.',
+    primary: 'Projelerime bak',
+    secondary: 'İletişime geç',
+    scroll: 'Kaydır',
+    cursor: 'Keşfet',
+  },
+  en: {
+    eyebrow: 'Software Engineer · Entrepreneur · Ankara',
+    lead: 'I build',
+    roles: ['web platforms', 'mobile apps', 'AI products', 'startups'],
+    suffix: ' for real users.',
+    primary: 'See my work',
+    secondary: 'Get in touch',
+    scroll: 'Scroll',
+    cursor: 'Explore',
+  },
+}
+const ROLE_COLORS = ['text-accent', 'text-sky', 'text-coral', 'text-violet']
 
 interface Shot {
   src: string
@@ -92,6 +115,7 @@ function SplitLetters({ text, ready, delay, className }: { text: string; ready: 
 }
 
 export default function Hero({ ready }: { ready: boolean }) {
+  const c = useCopy(COPY)
   const ref = useRef<HTMLElement>(null)
   const [role, setRole] = useState(0)
 
@@ -105,7 +129,7 @@ export default function Hero({ ready }: { ready: boolean }) {
   const titleOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
 
   useEffect(() => {
-    const id = setInterval(() => setRole((r) => (r + 1) % ROLES.length), 2400)
+    const id = setInterval(() => setRole((r) => (r + 1) % 4), 2400)
     return () => clearInterval(id)
   }, [])
 
@@ -117,7 +141,7 @@ export default function Hero({ ready }: { ready: boolean }) {
         mxRaw.set(e.clientX / window.innerWidth - 0.5)
         myRaw.set(e.clientY / window.innerHeight - 0.5)
       }}
-      className="relative flex h-[100svh] min-h-[640px] items-center justify-center overflow-hidden bg-ink"
+      className="relative flex h-[100svh] min-h-[640px] items-center justify-center overflow-hidden bg-ink pt-20 sm:pt-24"
     >
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[60vw] w-[60vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[140px]" />
 
@@ -136,17 +160,17 @@ export default function Hero({ ready }: { ready: boolean }) {
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-cream/70 backdrop-blur-md"
         >
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
-          Yazılım Mühendisi · Girişimci · Ankara
+          {c.eyebrow}
         </motion.div>
 
         <h1 className="font-display font-extrabold leading-[0.85] tracking-[-0.05em] text-cream">
-          <SplitLetters text="Kağan" ready={ready} delay={0.3} className="text-[22vw] sm:text-[17vw] lg:text-[14vw]" />
+          <SplitLetters text="Kağan" ready={ready} delay={0.3} className="text-[min(22vw,17vh)] sm:text-[min(17vw,18vh)] lg:text-[min(14vw,18vh)]" />
           <br />
           <SplitLetters
             text="Karkı"
             ready={ready}
             delay={0.5}
-            className="font-serif text-[22vw] font-normal italic tracking-[-0.03em] text-accent sm:text-[17vw] lg:text-[14vw]"
+            className="font-serif text-[min(22vw,17vh)] font-normal italic tracking-[-0.03em] text-accent sm:text-[min(17vw,18vh)] lg:text-[min(14vw,18vh)]"
           />
         </h1>
 
@@ -156,7 +180,7 @@ export default function Hero({ ready }: { ready: boolean }) {
           transition={{ duration: 1, delay: 1.1 }}
           className="mx-auto mt-6 max-w-xl text-lg text-cream/70 sm:text-2xl"
         >
-          <span className="block">Gerçek kullanıcılar için</span>
+          <span className="block">{c.lead}</span>
           <span className="relative block h-[1.4em] overflow-hidden">
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
@@ -167,7 +191,8 @@ export default function Hero({ ready }: { ready: boolean }) {
                 transition={{ duration: 0.6, ease: EASE_OUT }}
                 className="absolute inset-x-0 block whitespace-nowrap"
               >
-                <span className="font-serif text-[1.15em] italic text-cream">{ROLES[role]}</span> geliştiriyorum.
+                <span className={`font-serif text-[1.15em] italic ${ROLE_COLORS[role]}`}>{c.roles[role]}</span>
+                {c.suffix}
               </motion.span>
             </AnimatePresence>
           </span>
@@ -182,11 +207,11 @@ export default function Hero({ ready }: { ready: boolean }) {
           <Magnetic>
             <button
               type="button"
-              data-cursor="Keşfet"
+              data-cursor={c.cursor}
               onClick={() => scrollToId('projeler')}
               className="group flex items-center gap-3 rounded-full bg-accent py-2 pl-6 pr-2 font-medium text-ink"
             >
-              Projelerime bak
+              {c.primary}
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-accent transition-transform duration-500 group-hover:rotate-45">
                 <ArrowUpRight className="h-4 w-4" />
               </span>
@@ -198,7 +223,7 @@ export default function Hero({ ready }: { ready: boolean }) {
               onClick={() => scrollToId('iletisim')}
               className="rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-cream backdrop-blur-md transition-colors hover:bg-white/15"
             >
-              İletişime geç
+              {c.secondary}
             </button>
           </Magnetic>
         </motion.div>
@@ -210,9 +235,9 @@ export default function Hero({ ready }: { ready: boolean }) {
         initial={{ opacity: 0 }}
         animate={ready ? { opacity: 1 } : undefined}
         transition={{ delay: 1.8 }}
-        className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-cream/50"
+        className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 [@media(max-height:760px)]:hidden flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-cream/50"
       >
-        Kaydır
+        {c.scroll}
         <motion.span animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
           <ArrowDown className="h-4 w-4" />
         </motion.span>

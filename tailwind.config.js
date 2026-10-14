@@ -8,6 +8,9 @@ export default {
         coal: '#131317',
         cream: '#F3EFE6',
         accent: '#D4FF3F',
+        coral: '#FF7A59',
+        sky: '#7CC4FF',
+        violet: '#C39BFF',
       },
       fontFamily: {
         display: ['"Bricolage Grotesque"', 'system-ui', 'sans-serif'],

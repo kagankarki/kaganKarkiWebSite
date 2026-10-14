@@ -4,6 +4,56 @@ import { ArrowUpRight, Bot, Database, Layers, MapPin, MessageCircle, ShieldCheck
 import { EASE_OUT } from '../lib/motion'
 import { BrowserFrame, ExplorienceMark, PhoneFrame } from './ui/Frames'
 import { Eyebrow } from './ui/Reveal'
+import { useCopy } from '../i18n'
+
+const COPY = {
+  tr: {
+    eyebrow: 'Girişimler',
+    title: 'Sadece kod yazmıyorum,',
+    accent: 'şirket kuruyorum.',
+    intro: 'Ortağı olduğum yapay zeka stüdyosu ve kurduğum spor-mekan platformu. İkisi de gerçek müşterilerle, gerçek problemleri çözüyor.',
+    keepScrolling: 'Kaydırmaya devam et',
+    visit: 'Ziyaret',
+    exp: {
+      role: 'Ortak',
+      kicker: 'Yapay zeka otomasyonu · entegrasyonu · ajan geliştirme',
+      title: ['Net. Kesin.', 'Otomatik.'],
+      body: 'Ankara merkezli, genç ve küresel hedefli dijital dönüşüm ve yazılım stüdyosu. Ekibimle işletmelere yapay zeka ajanları, kurumsal veriyle çalışan RAG sistemleri, veri altyapıları ve web & mobil ürünler geliştiriyoruz.',
+      services: ['AI ajanları & asistanlar', 'Veri mühendisliği & ML', 'ERP / CRM entegrasyonu'],
+      stat: 'otomatikleştirilen işletme',
+    },
+    nm: {
+      role: 'Kurucu',
+      title: ['Maçı nerede', 'izliyoruz?'],
+      body: 'Galatasaray, Fenerbahçe, Beşiktaş ve Trabzonspor maçlarını veren mekanları bulduğun platform. Semtini seç, mekanı bul, yerini WhatsApp’tan tek mesajla ayırt.',
+      features: ['Takım, semt ve tarih filtresi', 'WhatsApp’tan tek mesajla rezervasyon', 'Taraftar yorumlarıyla doğrulanan mekanlar'],
+      shot2: 'neredemac.com · Bu haftanın maçları',
+    },
+  },
+  en: {
+    eyebrow: 'Ventures',
+    title: 'I don’t just write code,',
+    accent: 'I build companies.',
+    intro: 'An AI studio I’m a partner in and a sports-venue platform I founded. Both solve real problems for real customers.',
+    keepScrolling: 'Keep scrolling',
+    visit: 'Visit',
+    exp: {
+      role: 'Partner',
+      kicker: 'AI automation · integration · agent development',
+      title: ['Clear. Precise.', 'Automated.'],
+      body: 'A young, globally minded digital transformation and software studio based in Ankara. With my team we build AI agents, RAG systems on company data, data infrastructure and web & mobile products for businesses.',
+      services: ['AI agents & assistants', 'Data engineering & ML', 'ERP / CRM integration'],
+      stat: 'businesses automated',
+    },
+    nm: {
+      role: 'Founder',
+      title: ['Where are we', 'watching the match?'],
+      body: 'The platform for finding venues that show Galatasaray, Fenerbahçe, Beşiktaş and Trabzonspor matches. Pick your district, find a spot and book it with a single WhatsApp message.',
+      features: ['Filter by team, district and date', 'Book with a single WhatsApp message', 'Venues verified by fan reviews'],
+      shot2: 'neredemac.com · This week’s matches',
+    },
+  },
+}
 
 function useIsDesktop() {
   const [desktop, setDesktop] = useState(false)
@@ -26,26 +76,26 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
 }
 
 function IntroPanel() {
+  const c = useCopy(COPY)
   return (
     <div className="flex w-full shrink-0 flex-col justify-center py-10 lg:h-[82vh] lg:w-[42vw] lg:py-0 lg:pr-10">
-      <Eyebrow className="text-cream/60">Girişimler</Eyebrow>
+      <Eyebrow className="text-cream/60">{c.eyebrow}</Eyebrow>
       <h2 className="mt-6 font-display text-5xl font-bold leading-[0.95] tracking-tight sm:text-7xl">
-        Sadece kod yazmıyorum,
+        {c.title}
         <br />
-        <span className="font-serif font-normal italic text-accent">şirket kuruyorum.</span>
+        <span className="font-serif font-normal italic text-violet">{c.accent}</span>
       </h2>
-      <p className="mt-6 max-w-md text-cream/60">
-        Ortağı olduğum yapay zeka stüdyosu ve kurduğum spor-mekan platformu. İkisi de gerçek müşterilerle,
-        gerçek problemleri çözüyor.
-      </p>
+      <p className="mt-6 max-w-md text-cream/60">{c.intro}</p>
       <p className="mt-10 hidden items-center gap-3 font-mono text-xs uppercase tracking-widest text-cream/40 lg:flex">
-        <span className="h-px w-10 bg-cream/30" /> Kaydırmaya devam et
+        <span className="h-px w-10 bg-cream/30" /> {c.keepScrolling}
       </p>
     </div>
   )
 }
 
 function ExpleriencePanel() {
+  const c = useCopy(COPY)
+  const e = c.exp
   return (
     <Panel className="bg-[#141118]">
       <motion.div
@@ -65,27 +115,23 @@ function ExpleriencePanel() {
             <span className="font-display text-2xl font-semibold tracking-tight">explorience</span>
           </div>
           <span className="rounded-full bg-[#c58cf2] px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-widest text-[#1b0f26]">
-            Ortak
+            {e.role}
           </span>
         </div>
 
         <div className="max-w-xl text-white xl:max-w-[46%]">
-          <p className="font-mono text-xs uppercase tracking-widest text-[#d7b4f5]">Yapay zeka otomasyonu · entegrasyonu · ajan geliştirme</p>
+          <p className="font-mono text-xs uppercase tracking-widest text-[#d7b4f5]">{e.kicker}</p>
           <h3 className="mt-4 font-display text-5xl font-bold leading-[0.95] tracking-tight sm:text-7xl">
-            Net. Kesin.
+            {e.title[0]}
             <br />
-            Otomatik.
+            {e.title[1]}
           </h3>
-          <p className="mt-5 text-white/70">
-            Ankara merkezli, genç ve küresel hedefli dijital dönüşüm ve yazılım stüdyosu. Ekibimle işletmelere
-            yapay zeka ajanları, kurumsal veriyle çalışan RAG sistemleri, veri altyapıları ve web & mobil ürünler
-            geliştiriyoruz.
-          </p>
+          <p className="mt-5 text-white/70">{e.body}</p>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
             {[
-              { icon: Bot, t: 'AI ajanları & asistanlar' },
-              { icon: Database, t: 'Veri mühendisliği & ML' },
-              { icon: Layers, t: 'ERP / CRM entegrasyonu' },
+              { icon: Bot, t: e.services[0] },
+              { icon: Database, t: e.services[1] },
+              { icon: Layers, t: e.services[2] },
             ].map(({ icon: Icon, t }) => (
               <div key={t} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm backdrop-blur-md">
                 <Icon className="mb-3 h-5 w-5 text-[#d7b4f5]" />
@@ -98,13 +144,13 @@ function ExpleriencePanel() {
         <div className="flex flex-wrap items-end gap-10 text-white">
           <div>
             <p className="font-display text-6xl font-extrabold tracking-tighter">100+</p>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-white/50">otomatikleştirilen işletme</p>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-white/50">{e.stat}</p>
           </div>
           <a
             href="https://www.explorience.com.tr/tr/"
             target="_blank"
             rel="noreferrer"
-            data-cursor="Ziyaret"
+            data-cursor={c.visit}
             className="group inline-flex items-center gap-3 rounded-full bg-white py-2 pl-5 pr-2 text-sm font-medium text-[#141118]"
           >
             explorience.com.tr
@@ -121,6 +167,8 @@ function ExpleriencePanel() {
 const TEAMS = ['gs', 'fb', 'bjk', 'ts']
 
 function NeredemacPanel() {
+  const c = useCopy(COPY)
+  const n = c.nm
   return (
     <Panel className="bg-[radial-gradient(circle_at_20%_0%,#1f6b45_0%,#101814_50%,#0b0f0d_100%)]">
       <div className="relative grid h-full grid-cols-1 gap-8 p-7 sm:p-12 lg:grid-cols-2">
@@ -133,20 +181,17 @@ function NeredemacPanel() {
               </span>
             </div>
             <span className="rounded-full bg-[#3ccf86] px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-widest text-[#06210f]">
-              Kurucu
+              {n.role}
             </span>
           </div>
 
           <div>
             <h3 className="font-display text-5xl font-bold leading-[0.95] tracking-tight sm:text-6xl">
-              Maçı nerede
+              {n.title[0]}
               <br />
-              <span className="text-[#3ccf86]">izliyoruz?</span>
+              <span className="text-[#3ccf86]">{n.title[1]}</span>
             </h3>
-            <p className="mt-5 max-w-md text-white/70">
-              Galatasaray, Fenerbahçe, Beşiktaş ve Trabzonspor maçlarını veren mekanları bulduğun platform.
-              Semtini seç, mekanı bul, yerini WhatsApp’tan tek mesajla ayırt.
-            </p>
+            <p className="mt-5 max-w-md text-white/70">{n.body}</p>
             <div className="mt-6 flex gap-3">
               {TEAMS.map((t, i) => (
                 <motion.div
@@ -163,9 +208,9 @@ function NeredemacPanel() {
 
           <div className="space-y-2.5">
             {[
-              { icon: MapPin, t: 'Takım, semt ve tarih filtresi' },
-              { icon: MessageCircle, t: 'WhatsApp’tan tek mesajla rezervasyon' },
-              { icon: ShieldCheck, t: 'Taraftar yorumlarıyla doğrulanan mekanlar' },
+              { icon: MapPin, t: n.features[0] },
+              { icon: MessageCircle, t: n.features[1] },
+              { icon: ShieldCheck, t: n.features[2] },
             ].map(({ icon: Icon, t }) => (
               <p key={t} className="flex items-center gap-3 text-sm text-white/85">
                 <Icon className="h-4 w-4 text-[#3ccf86]" /> {t}
@@ -175,7 +220,7 @@ function NeredemacPanel() {
               href="https://www.neredemac.com/"
               target="_blank"
               rel="noreferrer"
-              data-cursor="Ziyaret"
+              data-cursor={c.visit}
               className="group !mt-6 inline-flex items-center gap-3 rounded-full bg-[#3ccf86] py-2 pl-5 pr-2 text-sm font-semibold text-[#06210f]"
             >
               neredemac.com
@@ -188,7 +233,7 @@ function NeredemacPanel() {
 
         <div className="relative hidden min-h-[320px] sm:block">
           <BrowserFrame src="/shots/neredemac.webp" url="neredemac.com" className="absolute right-0 top-0 w-[95%]" />
-          <BrowserFrame src="/shots/neredemac-2.webp" url="neredemac.com · Bu haftanın maçları" className="absolute bottom-[4%] right-[10%] w-[70%]" />
+          <BrowserFrame src="/shots/neredemac-2.webp" url={n.shot2} className="absolute bottom-[4%] right-[10%] w-[70%]" />
           <PhoneFrame src="/shots/neredemac-m.webp" className="absolute -bottom-[2%] left-0 aspect-[9/19] w-[27%] rotate-[-6deg]" />
         </div>
       </div>

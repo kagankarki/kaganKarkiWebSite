@@ -1,10 +1,16 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EASE_IN_OUT, EASE_OUT } from '../lib/motion'
+import { useCopy } from '../i18n'
 
-const WORDS = ['Web', 'Mobil', 'Yapay Zeka', 'Girişim', 'Kağan Karkı']
+const COPY = {
+  tr: { words: ['Web', 'Mobil', 'Yapay Zeka', 'Girişim', 'Kağan Karkı'], label: 'Portfolyo — 2026', loading: 'Yükleniyor' },
+  en: { words: ['Web', 'Mobile', 'AI', 'Startups', 'Kağan Karkı'], label: 'Portfolio — 2026', loading: 'Loading' },
+}
+const WORD_COUNT = 5
 
 export default function Preloader({ onDone }: { onDone: () => void }) {
+  const c = useCopy(COPY)
   const [count, setCount] = useState(0)
   const [wordIndex, setWordIndex] = useState(0)
   const [leaving, setLeaving] = useState(false)
@@ -18,7 +24,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
       const t = Math.min(1, (now - start) / duration)
       const eased = 1 - Math.pow(1 - t, 3)
       setCount(Math.round(eased * 100))
-      setWordIndex(Math.min(WORDS.length - 1, Math.floor(t * WORDS.length)))
+      setWordIndex(Math.min(WORD_COUNT - 1, Math.floor(t * WORD_COUNT)))
       if (t < 1) frame = requestAnimationFrame(tick)
       else setTimeout(() => setLeaving(true), 350)
     }
@@ -44,7 +50,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
           <div className="grain pointer-events-none absolute inset-0 opacity-[0.07]" />
 
           <div className="relative flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.25em] text-cream/50">
-            <span>Portfolyo — 2026</span>
+            <span>{c.label}</span>
             <span>Ankara, TR</span>
           </div>
 
@@ -56,9 +62,9 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
                 animate={{ y: '0%', opacity: 1 }}
                 exit={{ y: '-100%', opacity: 0 }}
                 transition={{ duration: 0.45, ease: EASE_OUT }}
-                className={wordIndex === WORDS.length - 1 ? 'text-accent' : ''}
+                className={wordIndex === WORD_COUNT - 1 ? 'text-accent' : ''}
               >
-                {WORDS[wordIndex]}
+                {c.words[wordIndex]}
               </motion.span>
             </AnimatePresence>
           </div>
@@ -68,7 +74,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
               <span className="font-display text-[22vw] font-extrabold leading-[0.8] tracking-tighter text-cream/90 sm:text-[14vw]">
                 {String(count).padStart(3, '0')}
               </span>
-              <span className="mb-3 font-mono text-[11px] uppercase tracking-[0.25em] text-cream/50">Yükleniyor</span>
+              <span className="mb-3 font-mono text-[11px] uppercase tracking-[0.25em] text-cream/50">{c.loading}</span>
             </div>
             <div className="mt-4 h-px w-full bg-cream/10">
               <div className="h-px bg-accent" style={{ width: `${count}%` }} />

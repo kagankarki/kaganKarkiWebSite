@@ -4,6 +4,78 @@ import { ArrowUpRight, Shirt, Sparkles, Star, Wand2 } from 'lucide-react'
 import { EASE_OUT } from '../lib/motion'
 import { BrowserFrame, PhoneFrame } from './ui/Frames'
 import { Eyebrow, RevealWords } from './ui/Reveal'
+import { useCopy } from '../i18n'
+
+const COPY = {
+  tr: {
+    eyebrow: 'Ürünler',
+    title: 'Fikirden,',
+    accent: 'cebindeki uygulamaya.',
+    intro: 'Mobil uygulamalar, yapay zeka ve markalar için web deneyimleri. Kaydırdıkça her proje bir öncekinin üstüne geliyor.',
+    open: 'Aç',
+    visit: 'Siteyi ziyaret et',
+    letfashChips: ['Dijital gardırop', 'Hava durumuna göre kombin', 'Moda sosyal ağı'],
+    letfashAlts: ['Letfash dijital gardırop ekranı', 'Letfash moda sosyal ağı akışı', 'Letfash kombin önizleme ekranı'],
+    minikShot: 'Sahne ışıkları animasyonu',
+    projects: {
+      waxmobi: {
+        kind: 'Flutter · Mobil Uygulama',
+        description:
+          'Aracı yıkamaya götürmek yerine ekibi aracın yanına getiren mobil uygulama. Hizmeti, günü, saati ve konumu seç; ev, iş yeri ya da otopark fark etmez. Ortalama 30 dakikada pırıl pırıl.',
+        tags: ['Flutter', 'Randevu', 'Konum', '7/24'],
+        status: 'Mağazalara geliyor',
+      },
+      letfash: {
+        kind: 'Yapay Zeka · Mobil Uygulama',
+        description:
+          'Yapay zeka destekli moda uygulaması ve sosyal ağı. Gardırobunu dijitale taşı, kombinlerini kaydet, hava durumuna göre yapay zekadan öneri al ve stilini toplulukla paylaş.',
+        tags: ['Yapay Zeka', 'Mobil', 'Dijital Gardırop', 'Sosyal Ağ'],
+        status: 'Mobil uygulama',
+      },
+      minik: {
+        kind: 'Web · Tasarım & Geliştirme',
+        description:
+          'Ankara’da organizasyon hizmeti veren Minik Yıldızlar için sinematik bir tanıtım sitesi. Sahne ışıkları, altın tonları ve teklif almaya yönlendiren sade bir akış.',
+        tags: ['Web', 'Animasyon', 'Marka', 'Mobil öncelikli'],
+        status: 'Yayında',
+      },
+    },
+  },
+  en: {
+    eyebrow: 'Products',
+    title: 'From an idea,',
+    accent: 'to the app in your pocket.',
+    intro: 'Mobile apps, AI and web experiences for brands. As you scroll, each project stacks on top of the last.',
+    open: 'Open',
+    visit: 'Visit the site',
+    letfashChips: ['Digital wardrobe', 'Weather-aware outfits', 'Fashion social network'],
+    letfashAlts: ['Letfash digital wardrobe screen', 'Letfash fashion social feed', 'Letfash outfit preview screen'],
+    minikShot: 'Stage lights animation',
+    projects: {
+      waxmobi: {
+        kind: 'Flutter · Mobile App',
+        description:
+          'A mobile app that brings the car wash team to your car instead of the other way round. Pick the service, day, time and place: home, office or parking lot. Spotless in about 30 minutes.',
+        tags: ['Flutter', 'Booking', 'Location', '24/7'],
+        status: 'Coming to stores',
+      },
+      letfash: {
+        kind: 'AI · Mobile App',
+        description:
+          'An AI-powered fashion app and social network. Digitize your wardrobe, save your outfits, get weather-aware suggestions from AI and share your style with the community.',
+        tags: ['AI', 'Mobile', 'Digital Wardrobe', 'Social'],
+        status: 'Mobile app',
+      },
+      minik: {
+        kind: 'Web · Design & Development',
+        description:
+          'A cinematic website for Minik Yıldızlar, an events company in Ankara. Stage lights, golden tones and a simple flow that leads to a quote request.',
+        tags: ['Web', 'Animation', 'Brand', 'Mobile-first'],
+        status: 'Live',
+      },
+    },
+  },
+}
 
 interface Project {
   key: string
@@ -56,19 +128,20 @@ function WaxVisual() {
 }
 
 const LETFASH_SCREENS = [
-  { src: '/letfash/wardrobe.webp', alt: 'Letfash dijital gardırop ekranı', cls: 'left-0 top-[8%] w-[38%] z-10', rotate: -9, d: 0.15 },
-  { src: '/letfash/feed.webp', alt: 'Letfash moda sosyal ağı akışı', cls: 'left-1/2 top-0 w-[46%] -translate-x-1/2 z-20', rotate: 0, d: 0 },
-  { src: '/letfash/outfit.webp', alt: 'Letfash kombin önizleme ekranı', cls: 'right-0 top-[10%] w-[38%] z-10', rotate: 9, d: 0.3 },
+  { src: '/letfash/wardrobe.webp', cls: 'left-0 top-[8%] w-[38%] z-10', rotate: -9, d: 0.15 },
+  { src: '/letfash/feed.webp', cls: 'left-1/2 top-0 w-[46%] -translate-x-1/2 z-20', rotate: 0, d: 0 },
+  { src: '/letfash/outfit.webp', cls: 'right-0 top-[10%] w-[38%] z-10', rotate: 9, d: 0.3 },
 ]
 
 function LetfashVisual() {
+  const c = useCopy(COPY)
   return (
     <div className="relative h-full w-full">
-      {LETFASH_SCREENS.map((s) => (
+      {LETFASH_SCREENS.map((s, i) => (
         <div key={s.src} className={`absolute ${s.cls}`}>
           <motion.img
             src={s.src}
-            alt={s.alt}
+            alt={c.letfashAlts[i]}
             loading="lazy"
             initial={{ opacity: 0, y: 120, rotate: s.rotate * 2 }}
             whileInView={{ opacity: 1, y: 0, rotate: s.rotate }}
@@ -92,9 +165,9 @@ function LetfashVisual() {
       </motion.div>
 
       {[
-        { text: 'Dijital gardırop', icon: Shirt, cls: 'right-[4%] bottom-[22%]', d: 0.8 },
-        { text: 'Hava durumuna göre kombin', icon: Wand2, cls: 'right-[10%] bottom-[8%]', d: 1 },
-        { text: 'Moda sosyal ağı', icon: Sparkles, cls: 'left-[34%] bottom-[14%]', d: 1.2 },
+        { text: c.letfashChips[0], icon: Shirt, cls: 'right-[4%] bottom-[22%]', d: 0.8 },
+        { text: c.letfashChips[1], icon: Wand2, cls: 'right-[10%] bottom-[8%]', d: 1 },
+        { text: c.letfashChips[2], icon: Sparkles, cls: 'left-[34%] bottom-[14%]', d: 1.2 },
       ].map(({ text, icon: Icon, cls, d }) => (
         <motion.div
           key={text}
@@ -112,6 +185,7 @@ function LetfashVisual() {
 }
 
 function MinikVisual() {
+  const c = useCopy(COPY)
   return (
     <div className="relative h-full w-full">
       <motion.div
@@ -130,7 +204,7 @@ function MinikVisual() {
         transition={{ duration: 1.4, ease: EASE_OUT, delay: 0.25 }}
         className="absolute bottom-[4%] left-[18%] w-[60%]"
       >
-        <BrowserFrame src="/shots/minik-yildizlar-2.webp" url="Sahne ışıkları animasyonu" />
+        <BrowserFrame src="/shots/minik-yildizlar-2.webp" url={c.minikShot} />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 100, rotate: 14 }}
@@ -195,7 +269,21 @@ const PROJECTS: Project[] = [
   },
 ]
 
-function ProjectCard({ project, i, total, progress }: { project: Project; i: number; total: number; progress: MotionValue<number> }) {
+function ProjectCard({
+  project,
+  i,
+  total,
+  progress,
+  openLabel,
+  visitLabel,
+}: {
+  project: Project
+  i: number
+  total: number
+  progress: MotionValue<number>
+  openLabel: string
+  visitLabel: string
+}) {
   const start = i / total
   const scale = useTransform(progress, [start, 1], [1, 1 - (total - 1 - i) * 0.06])
   const brightness = useTransform(progress, [start, 1], [1, 1 - (total - 1 - i) * 0.25])
@@ -245,10 +333,10 @@ function ProjectCard({ project, i, total, progress }: { project: Project; i: num
                 href={project.href}
                 target="_blank"
                 rel="noreferrer"
-                data-cursor="Aç"
+                data-cursor={openLabel}
                 className="group mt-6 hidden items-center gap-3 rounded-full bg-white/15 py-2 pl-5 pr-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/25 sm:inline-flex"
               >
-                Siteyi ziyaret et
+                {visitLabel}
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black transition-transform duration-500 group-hover:rotate-45">
                   <ArrowUpRight className="h-4 w-4" />
                 </span>
@@ -264,31 +352,38 @@ function ProjectCard({ project, i, total, progress }: { project: Project; i: num
 }
 
 export default function Projects() {
+  const c = useCopy(COPY)
+  const projects = PROJECTS.map((p) => ({ ...p, ...c.projects[p.key as keyof typeof c.projects] }))
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
   return (
     <section id="projeler" className="relative bg-ink">
       <div className="mx-auto max-w-7xl px-5 pb-10 pt-28 sm:px-10 sm:pt-40">
-        <Eyebrow className="text-cream/60">Ürünler</Eyebrow>
+        <Eyebrow className="text-cream/60">{c.eyebrow}</Eyebrow>
         <div className="mt-6 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
           <h2 className="font-display text-5xl font-bold leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
-            <RevealWords text="Fikirden," />
+            <RevealWords text={c.title} />
             <br />
-            <span className="font-serif font-normal italic text-accent">
-              <RevealWords text="cebindeki uygulamaya." delay={0.2} />
+            <span className="font-serif font-normal italic text-coral">
+              <RevealWords text={c.accent} delay={0.2} />
             </span>
           </h2>
-          <p className="max-w-sm text-cream/60">
-            Mobil uygulamalar, yapay zeka ve markalar için web deneyimleri. Kaydırdıkça her proje bir
-            öncekinin üstüne geliyor.
-          </p>
+          <p className="max-w-sm text-cream/60">{c.intro}</p>
         </div>
       </div>
 
       <div ref={ref} className="relative">
-        {PROJECTS.map((p, i) => (
-          <ProjectCard key={p.key} project={p} i={i} total={PROJECTS.length} progress={scrollYProgress} />
+        {projects.map((p, i) => (
+          <ProjectCard
+            key={p.key}
+            project={p}
+            i={i}
+            total={projects.length}
+            progress={scrollYProgress}
+            openLabel={c.open}
+            visitLabel={c.visit}
+          />
         ))}
       </div>
     </section>

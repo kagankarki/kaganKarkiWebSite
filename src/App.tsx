@@ -10,6 +10,7 @@ import LogoMarquee from './components/LogoMarquee'
 import GaziSpotlight from './components/GaziSpotlight'
 import Projects from './components/Projects'
 import Ventures from './components/Ventures'
+import Helix from './components/Helix'
 import Contact from './components/Contact'
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
         <GaziSpotlight />
         <Projects />
         <Ventures />
+        <Helix />
         <Contact />
       </main>
     </>
