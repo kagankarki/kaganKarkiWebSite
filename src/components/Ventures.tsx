@@ -100,7 +100,7 @@ function ExpleriencePanel() {
         aria-hidden
         animate={{ x: ['0%', '8%', '0%'], scale: [1, 1.15, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute -right-[10%] -top-[20%] h-[90%] w-[60%] rounded-full bg-[#b06ae0]/40 blur-[120px]"
+        className="fx-heavy absolute -right-[10%] -top-[20%] h-[90%] w-[60%] rounded-full bg-[#b06ae0]/40 blur-[120px]"
       />
       <div className="grain pointer-events-none absolute inset-0 opacity-[0.08]" />
       <div className="absolute bottom-[6%] right-[4%] hidden w-[46%] rotate-[3deg] xl:block">

@@ -103,7 +103,7 @@ export default function GaziSpotlight() {
             transition={{ duration: 1.6, ease: EASE_OUT }}
             className="relative shrink-0"
           >
-            <div className="absolute inset-0 rounded-full bg-[#8fb4ff]/30 blur-3xl" />
+            <div className="fx-heavy absolute inset-0 rounded-full bg-[#8fb4ff]/30 blur-3xl" />
             <img src="/logos/gazi-logo.png" alt="Gazi Üniversitesi" className="relative h-36 w-36 sm:h-48 sm:w-48" />
           </motion.div>
         </div>

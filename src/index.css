@@ -67,6 +67,19 @@ html.lenis body {
   animation-play-state: paused;
 }
 
+/* Phones and tablets: big blurs, live backdrop blur and the SVG grain are
+   the most expensive things to paint on iOS Safari and froze the page there. */
+@media (pointer: coarse), (max-width: 1023px) {
+  .grain,
+  .fx-heavy {
+    display: none !important;
+  }
+  [class*='backdrop-blur'] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .marquee {
     animation: none;

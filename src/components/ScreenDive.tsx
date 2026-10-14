@@ -72,6 +72,7 @@ export default function ScreenDive({ ready }: { ready: boolean }) {
   const ref = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imagesRef = useRef<HTMLImageElement[]>([])
+  const decodedRef = useRef<boolean[]>([])
   const currentRef = useRef(0)
   const [frame, setFrame] = useState(1)
   const [FRAMES] = useState(pickFrames)
@@ -95,7 +96,7 @@ export default function ScreenDive({ ready }: { ready: boolean }) {
     for (let o = 0; o < FRAMES.length && !img; o++) {
       for (const i of [target - o, target + o]) {
         const c = images[i]
-        if (c && c.complete && c.naturalWidth > 0) {
+        if (c && decodedRef.current[i]) {
           img = c
           break
         }
@@ -117,21 +118,60 @@ export default function ScreenDive({ ready }: { ready: boolean }) {
     ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh)
   }
 
-  // Start fetching frames once the intro is gone, so they never compete with it.
+  // Frames are fetched and decoded a few at a time, off the main thread, and
+  // only after the hero has finished animating (or the visitor starts
+  // scrolling). Creating all of them at once froze iOS Safari for seconds.
   useEffect(() => {
-    if (!ready || imagesRef.current.length) return
-    imagesRef.current = FRAMES.map((url, i) => {
-      const img = new Image()
-      img.decoding = 'async'
-      img.onload = () => {
-        if (i === 0 || i === currentRef.current) draw(currentRef.current)
+    if (!ready) return
+    let cancelled = false
+    let started = false
+    const timers: number[] = []
+
+    const start = () => {
+      if (started || cancelled) return
+      started = true
+      window.removeEventListener('scroll', start)
+
+      const images: HTMLImageElement[] = new Array(FRAMES.length)
+      imagesRef.current = images
+      decodedRef.current = new Array(FRAMES.length).fill(false)
+
+      // Coarse pass first (every 4th frame) so scrubbing works early, then fill the gaps.
+      const order = [
+        ...FRAMES.map((_, i) => i).filter((i) => i % 4 === 0),
+        ...FRAMES.map((_, i) => i).filter((i) => i % 4 !== 0),
+      ]
+      let next = 0
+      const worker = async () => {
+        while (!cancelled && next < order.length) {
+          const i = order[next++]
+          const img = new Image()
+          img.decoding = 'async'
+          img.src = FRAMES[i]
+          images[i] = img
+          try {
+            await img.decode()
+          } catch {
+            continue
+          }
+          if (cancelled) return
+          decodedRef.current[i] = true
+          if (i === 0 || Math.abs(i - currentRef.current) <= 2) draw(currentRef.current)
+        }
       }
-      img.src = url
-      return img
-    })
+      for (let k = 0; k < 4; k++) void worker()
+    }
+
+    window.addEventListener('scroll', start, { passive: true })
+    timers.push(window.setTimeout(start, 2500))
     const onResize = () => draw(currentRef.current)
     window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
+    return () => {
+      cancelled = true
+      timers.forEach(clearTimeout)
+      window.removeEventListener('scroll', start)
+      window.removeEventListener('resize', onResize)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])
 

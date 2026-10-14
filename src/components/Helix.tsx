@@ -103,7 +103,7 @@ export default function Helix() {
             aria-hidden
             animate={{ opacity: [0.25, 0.6, 0.25] }}
             transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-            className="pointer-events-none absolute left-1/2 top-[48.5%] aspect-square w-[20%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky/20 blur-3xl"
+            className="fx-heavy pointer-events-none absolute left-1/2 top-[48.5%] aspect-square w-[20%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky/20 blur-3xl"
           />
 
           {/* Chat bubble */}

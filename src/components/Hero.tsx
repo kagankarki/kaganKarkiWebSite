@@ -143,7 +143,7 @@ export default function Hero({ ready }: { ready: boolean }) {
       }}
       className="relative flex h-[100svh] min-h-[640px] items-center justify-center overflow-hidden bg-ink pt-20 sm:pt-24"
     >
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[60vw] w-[60vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[140px]" />
+      <div className="fx-heavy pointer-events-none absolute left-1/2 top-1/2 h-[60vw] w-[60vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[140px]" />
 
       {SHOTS.map((s, i) => (
         <FloatingShot key={s.src} shot={s} index={i} mx={mx} my={my} scrollOut={scrollYProgress} ready={ready} />
