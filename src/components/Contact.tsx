@@ -138,16 +138,29 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="relative select-none overflow-hidden pb-4">
-        <motion.p
-          initial={{ y: '60%' }}
-          whileInView={{ y: '0%' }}
+      <div className="relative select-none overflow-hidden px-4 pb-4 pt-6 sm:px-10">
+        {/* SVG so the name always spans the full width exactly, breve included. */}
+        <motion.svg
+          viewBox="0 0 1000 200"
+          aria-label="Kağan Karkı"
+          role="img"
+          initial={{ y: '60%', opacity: 0 }}
+          whileInView={{ y: '0%', opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          className="whitespace-nowrap text-center font-display text-[19vw] font-extrabold leading-[0.8] tracking-[-0.06em] text-ink"
+          className="block w-full overflow-visible"
         >
-          KAĞAN KARKI
-        </motion.p>
+          <text
+            x="0"
+            y="185"
+            textLength="1000"
+            lengthAdjust="spacingAndGlyphs"
+            className="fill-ink font-display font-extrabold"
+            style={{ fontSize: 190, letterSpacing: '-0.04em' }}
+          >
+            KAĞAN KARKI
+          </text>
+        </motion.svg>
         <p className="mt-4 text-center font-mono text-[11px] uppercase tracking-widest text-ink/50">© {new Date().getFullYear()} · Ankara</p>
       </div>
     </footer>
