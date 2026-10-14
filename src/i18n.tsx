@@ -61,4 +61,5 @@ export const PROFILE = {
   email: 'kagankarki03@gmail.com',
   github: 'https://github.com/kagankarki',
   linkedin: 'https://www.linkedin.com/in/kagan-karki/',
+  instagram: 'https://www.instagram.com/kagankarki/',
 }

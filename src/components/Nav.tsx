@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from 'framer-motion'
-import { Github, Linkedin } from 'lucide-react'
+import { Github, Instagram, Linkedin } from 'lucide-react'
 import { EASE_IN_OUT, EASE_OUT, scrollToId } from '../lib/motion'
 import { PROFILE, useCopy, useLang, type Lang } from '../i18n'
 
@@ -166,6 +166,9 @@ export default function Nav() {
                 </a>
                 <a href={PROFILE.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-accent">
                   <Linkedin className="h-5 w-5" />
+                </a>
+                <a href={PROFILE.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-accent">
+                  <Instagram className="h-5 w-5" />
                 </a>
               </div>
             </div>

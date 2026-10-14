@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { animate, motion, useInView, useScroll, useTransform, type MotionValue } from 'framer-motion'
-import { ArrowUpRight, Github, Linkedin } from 'lucide-react'
+import { ArrowUpRight, Github, Instagram, Linkedin } from 'lucide-react'
 import { Eyebrow, FadeUp, RevealImage, RevealWords } from './ui/Reveal'
 import { ExplorienceMark } from './ui/Frames'
 import { PROFILE, useCopy } from '../i18n'
@@ -206,6 +206,18 @@ export default function About() {
                   <Linkedin className="h-4 w-4" />
                 </span>
                 linkedin.com/in/kagan-karki
+              </a>
+              <a
+                href={PROFILE.instagram}
+                target="_blank"
+                rel="noreferrer"
+                data-cursor="Instagram"
+                className="group inline-flex items-center gap-3 rounded-full bg-[linear-gradient(45deg,#f9a825_0%,#e1306c_45%,#833ab4_100%)] py-2 pl-2 pr-5 text-sm font-medium text-white"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#e1306c] transition-transform duration-500 group-hover:rotate-[360deg]">
+                  <Instagram className="h-4 w-4" />
+                </span>
+                @kagankarki
               </a>
             </FadeUp>
 

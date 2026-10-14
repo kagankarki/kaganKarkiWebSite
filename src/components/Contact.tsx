@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUp, ArrowUpRight, Check, Copy, Github, Linkedin } from 'lucide-react'
+import { ArrowUp, ArrowUpRight, Check, Copy, Github, Instagram, Linkedin } from 'lucide-react'
 import { scrollToId } from '../lib/motion'
 import Magnetic from './ui/Magnetic'
 import { Eyebrow, RevealWords } from './ui/Reveal'
@@ -116,6 +116,9 @@ export default function Contact() {
             </a>
             <a href={PROFILE.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-accent transition-transform hover:-translate-y-1">
               <Linkedin className="h-4 w-4" />
+            </a>
+            <a href={PROFILE.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-accent transition-transform hover:-translate-y-1">
+              <Instagram className="h-4 w-4" />
             </a>
             {LINKS.map((l) => (
               <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className="group relative">
