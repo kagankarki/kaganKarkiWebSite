@@ -20,7 +20,7 @@ export default function App() {
     <>
       <SmoothScroll />
       <Cursor />
-      {!ready && <Preloader onDone={() => setReady(true)} />}
+      <Preloader onDone={() => setReady(true)} />
       <Nav />
 
       <main>

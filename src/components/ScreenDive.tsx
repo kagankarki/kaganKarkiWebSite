@@ -2,11 +2,20 @@ import { useEffect, useRef, useState } from 'react'
 import { useCopy } from '../i18n'
 import { motion, useMotionValueEvent, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 
-// The 241-frame camera move into the laptop screen, played by scroll.
-const frameModules = import.meta.glob<string>('../../assets/intro/*.jpg', { eager: true, import: 'default' })
-const FRAMES = Object.entries(frameModules)
-  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-  .map(([, url]) => url)
+// The camera move into the laptop screen, played by scroll. Sources live in
+// assets/intro (241 frames, 1940px); decoding all of them takes ~2 GB, which
+// crashes iOS Safari, so phones get every 3rd frame at 720px and desktops
+// every 2nd frame at 1440px.
+const FRAME_SETS = {
+  mobile: { base: '/frames/m/', count: 81 },
+  desktop: { base: '/frames/d/', count: 121 },
+}
+
+function pickFrames() {
+  const small = typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches
+  const set = small ? FRAME_SETS.mobile : FRAME_SETS.desktop
+  return Array.from({ length: set.count }, (_, i) => `${set.base}${String(i + 1).padStart(3, '0')}.webp`)
+}
 
 const RANGES = [
   [0.02, 0.1, 0.24, 0.32],
@@ -68,6 +77,7 @@ export default function ScreenDive({ ready }: { ready: boolean }) {
   const imagesRef = useRef<HTMLImageElement[]>([])
   const currentRef = useRef(0)
   const [frame, setFrame] = useState(1)
+  const [FRAMES] = useState(pickFrames)
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
   const smooth = useSpring(scrollYProgress, { stiffness: 220, damping: 30, restDelta: 0.001 })
