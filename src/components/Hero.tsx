@@ -1,369 +1,222 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion'
-import { ArrowUpRight, ChevronDown, Play } from 'lucide-react'
-import WordsPullUp from './WordsPullUp'
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion'
+import { ArrowDown, ArrowUpRight } from 'lucide-react'
+import { EASE_OUT, scrollToId } from '../lib/motion'
+import Magnetic from './ui/Magnetic'
 
-// Eagerly load all extracted frame images in numerical order
-const frameModules = import.meta.glob<string>(
-  '../../assets/intro/*.jpg',
-  { eager: true, import: 'default' }
-)
+const ROLES = ['web platformları', 'mobil uygulamalar', 'yapay zeka ürünleri', 'girişimler']
 
-const FRAME_URLS = Object.entries(frameModules)
-  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-  .map(([, url]) => url)
-
-const NAV_ITEMS = [
-  { label: 'Manifesto', href: '#manifesto' },
-  { label: 'Selected Works', href: '#works' },
-  { label: 'Capabilities', href: '#capabilities' },
-  { label: 'Inquiries', href: '#contact' },
-]
-
-const CREAM = '#E1E0CC'
-const CREAM_DIM = 'rgba(225, 224, 204, 0.75)'
-const EASE = [0.16, 1, 0.3, 1] as const
-
-interface HeroProps {
-  onProgress?: (progress: number) => void
+interface Shot {
+  src: string
+  className: string
+  depth: number
+  rotate: number
+  phone?: boolean
 }
 
-export default function Hero({ onProgress }: HeroProps) {
-  const containerRef = useRef<HTMLElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const imagesRef = useRef<HTMLImageElement[]>([])
-  const currentFrameRef = useRef<number>(0)
-  const isDrawingRef = useRef<boolean>(false)
-  const [activeFrameDisplay, setActiveFrameDisplay] = useState(1)
+// Real screenshots of the projects, scattered around the name.
+const SHOTS: Shot[] = [
+  { src: '/shots/gazi-sinav.webp', className: 'left-[-6%] top-[12%] w-[30vw] max-w-[440px] sm:left-[2%]', depth: 30, rotate: -8 },
+  { src: '/shots/neredemac.webp', className: 'right-[-8%] top-[10%] w-[34vw] max-w-[480px] sm:right-[1%]', depth: 45, rotate: 6 },
+  { src: '/shots/waxmobi-m.webp', className: 'left-[10%] bottom-[8%] hidden w-[11vw] max-w-[170px] md:block', depth: 60, rotate: -12, phone: true },
+  { src: '/shots/minik-yildizlar.webp', className: 'right-[4%] bottom-[14%] hidden w-[26vw] max-w-[400px] md:block', depth: 25, rotate: -5 },
+  { src: '/shots/explorience.webp', className: 'left-[28%] top-[-6%] hidden w-[18vw] max-w-[280px] lg:block', depth: 15, rotate: 4 },
+  { src: '/shots/neredemac-m.webp', className: 'right-[30%] bottom-[-10%] hidden w-[10vw] max-w-[150px] lg:block', depth: 50, rotate: 10, phone: true },
+]
 
-  // Track scroll through the pinned hero section
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  })
-
-  // Smooth spring scroll interpolation
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 260,
-    damping: 28,
-    restDelta: 0.001,
-  })
-
-  // Fade out hero UI quickly as the camera begins zooming into the laptop screen
-  const textOpacity = useTransform(scrollYProgress, [0, 0.12, 0.22], [1, 0.9, 0])
-  const textY = useTransform(scrollYProgress, [0, 0.12, 0.22], [0, -10, -40])
-  const textBlur = useTransform(scrollYProgress, [0, 0.12, 0.22], ['blur(0px)', 'blur(2px)', 'blur(8px)'])
-
-  const topNavOpacity = useTransform(scrollYProgress, [0, 0.12, 0.22], [1, 0.8, 0])
-  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.06], [1, 0])
-
-  // Pure white overlay at the very end when the screen fills the viewport
-  const whiteTransitionOpacity = useTransform(scrollYProgress, [0.82, 0.97], [0, 1])
-
-  const renderFrame = (index: number) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d', { alpha: false })
-    if (!ctx) return
-
-    const images = imagesRef.current
-    if (!images.length) return
-
-    const totalFrames = FRAME_URLS.length
-    const targetIdx = Math.min(totalFrames - 1, Math.max(0, index))
-    currentFrameRef.current = targetIdx
-
-    // Find requested image or closest loaded frame
-    let img = images[targetIdx]
-    if (!img || !img.complete || img.naturalWidth === 0) {
-      for (let offset = 1; offset < totalFrames; offset++) {
-        const prev = images[targetIdx - offset]
-        if (prev && prev.complete && prev.naturalWidth > 0) {
-          img = prev
-          break
-        }
-        const next = images[targetIdx + offset]
-        if (next && next.complete && next.naturalWidth > 0) {
-          img = next
-          break
-        }
-      }
-    }
-
-    if (!img || !img.complete || img.naturalWidth === 0) return
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    const rect = canvas.getBoundingClientRect()
-    const displayW = Math.round(rect.width * dpr)
-    const displayH = Math.round(rect.height * dpr)
-
-    if (canvas.width !== displayW || canvas.height !== displayH) {
-      canvas.width = displayW
-      canvas.height = displayH
-    }
-
-    const cw = canvas.width
-    const ch = canvas.height
-    const iw = img.naturalWidth || img.width
-    const ih = img.naturalHeight || img.height
-
-    if (!iw || !ih) return
-
-    // Object-fit: cover math
-    const scale = Math.max(cw / iw, ch / ih)
-    const nw = iw * scale
-    const nh = ih * scale
-    const nx = (cw - nw) / 2
-    const ny = (ch - nh) / 2
-
-    ctx.imageSmoothingEnabled = true
-    ctx.imageSmoothingQuality = 'high'
-    ctx.drawImage(img, nx, ny, nw, nh)
-  }
-
-  // Preload frames into memory & report progress
-  useEffect(() => {
-    const images: HTMLImageElement[] = []
-    let loaded = 0
-    const total = FRAME_URLS.length
-
-    FRAME_URLS.forEach((url, i) => {
-      const img = new Image()
-      img.src = url
-      img.onload = () => {
-        loaded++
-        onProgress?.(Math.round((loaded / total) * 100))
-        if (i === 0 || currentFrameRef.current === i) {
-          renderFrame(currentFrameRef.current)
-        }
-      }
-      img.onerror = () => {
-        loaded++
-        onProgress?.(Math.round((loaded / total) * 100))
-      }
-      images.push(img)
-    })
-
-    imagesRef.current = images
-
-    if (images[0]?.complete && images[0].naturalWidth > 0) {
-      renderFrame(0)
-    }
-
-    const handleResize = () => {
-      renderFrame(currentFrameRef.current)
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [onProgress])
-
-  // Scrub frame on scroll
-  useMotionValueEvent(smoothProgress, 'change', (latest) => {
-    const totalFrames = FRAME_URLS.length
-    if (totalFrames === 0) return
-
-    const frameIdx = Math.min(
-      totalFrames - 1,
-      Math.max(0, Math.floor(latest * (totalFrames - 1)))
-    )
-
-    if (!isDrawingRef.current) {
-      isDrawingRef.current = true
-      requestAnimationFrame(() => {
-        renderFrame(frameIdx)
-        setActiveFrameDisplay(frameIdx + 1)
-        isDrawingRef.current = false
-      })
-    }
-  })
+function FloatingShot({
+  shot,
+  index,
+  mx,
+  my,
+  scrollOut,
+  ready,
+}: {
+  shot: Shot
+  index: number
+  mx: MotionValue<number>
+  my: MotionValue<number>
+  scrollOut: MotionValue<number>
+  ready: boolean
+}) {
+  const x = useTransform(mx, (v) => v * shot.depth)
+  const y = useTransform([my, scrollOut], ([m, s]: number[]) => m * shot.depth - s * shot.depth * 6)
+  const scale = useTransform(scrollOut, [0, 1], [1, 0.85])
 
   return (
-    <section ref={containerRef} className="relative h-[290vh] w-full bg-black">
-      {/* Sticky full-screen viewport */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
-        {/* Scroll-scrubbed canvas background filling 100% edge-to-edge */}
-        <canvas
-          ref={canvasRef}
-          data-cursor="SCROLL"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-
-        {/* Subtle cinematic gradient overlay (only active in first phase) */}
+    <motion.div className={`absolute ${shot.className}`} style={{ x, y, scale }}>
+      <motion.div
+        initial={{ opacity: 0, y: 120, rotate: shot.rotate * 2 }}
+        animate={ready ? { opacity: 1, y: 0, rotate: shot.rotate } : undefined}
+        transition={{ duration: 1.6, ease: EASE_OUT, delay: 0.5 + index * 0.1 }}
+      >
         <motion.div
-          style={{ opacity: textOpacity }}
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80"
-        />
-
-        {/* Pure White Transition Overlay — cleanly bridges the zoom into the next white section */}
-        <motion.div
-          style={{ opacity: whiteTransitionOpacity }}
-          className="pointer-events-none absolute inset-0 z-10 bg-white"
-        />
-
-        {/* Header / Navbar (fades out as zoom starts) */}
-        <motion.header
-          style={{
-            opacity: topNavOpacity,
-            pointerEvents: topNavOpacity.get() < 0.05 ? 'none' : 'auto',
-          }}
-          className="absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-6 py-5 sm:px-10 md:px-14 md:py-7"
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 6 + index, repeat: Infinity, ease: 'easeInOut' }}
+          className={`overflow-hidden border border-white/10 opacity-60 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)] ${
+            shot.phone ? 'aspect-[9/19] rounded-[1.6rem] border-[5px] border-[#222]' : 'aspect-[16/10] rounded-xl'
+          }`}
         >
-          {/* Logo & Status Badge */}
-          <div className="flex items-center gap-4 sm:gap-6">
-            <a
-              href="#"
-              data-cursor="PRISMA"
-              className="flex items-center gap-1 text-base font-medium tracking-tight text-[#E1E0CC] transition-opacity hover:opacity-80 sm:text-lg"
-            >
-              <span>PRISMA</span>
-              <span className="text-primary">*</span>
-            </a>
+          <img src={shot.src} alt="" className="h-full w-full object-cover object-top" />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  )
+}
 
-            <div className="hidden items-center gap-2 rounded-full bg-black/40 px-3 py-1 text-[10px] tracking-wider text-[#E1E0CC]/70 backdrop-blur-md lg:flex">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              <span>COLLECTIVE ACTIVE</span>
-            </div>
-          </div>
-
-          {/* Center Floating Glass Island */}
-          <nav className="hidden rounded-full bg-black/60 px-6 py-2.5 shadow-2xl backdrop-blur-xl md:block">
-            <ul className="flex items-center gap-8 lg:gap-10">
-              {NAV_ITEMS.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    data-cursor="VIEW"
-                    className="text-xs font-medium tracking-wide transition-all duration-300 hover:text-[#E1E0CC]"
-                    style={{ color: CREAM_DIM }}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* Quick Action Button */}
-          <div className="flex items-center gap-3">
-            <a
-              href="#contact"
-              data-cursor="CONTACT"
-              className="group flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-[#E1E0CC] backdrop-blur-md transition-all duration-300 hover:bg-white/20 sm:px-5 sm:py-2.5 sm:text-sm"
-            >
-              <span>Initiate Project</span>
-              <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </a>
-          </div>
-        </motion.header>
-
-        {/* Main Hero UI — gracefully disappears as zoom starts */}
-        <motion.div
-          style={{
-            opacity: textOpacity,
-            y: textY,
-            filter: textBlur,
-            pointerEvents: textOpacity.get() < 0.05 ? 'none' : 'auto',
-          }}
-          className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-8 sm:px-10 md:px-14 md:pb-12 lg:pb-14"
+function SplitLetters({ text, ready, delay, className }: { text: string; ready: boolean; delay: number; className?: string }) {
+  return (
+    <span className={`inline-flex overflow-hidden pb-[0.08em] ${className ?? ''}`} aria-label={text}>
+      {text.split('').map((ch, i) => (
+        <motion.span
+          key={i}
+          aria-hidden
+          className="inline-block"
+          initial={{ y: '110%' }}
+          animate={ready ? { y: '0%' } : undefined}
+          transition={{ duration: 1.1, ease: EASE_OUT, delay: delay + i * 0.05 }}
         >
-          <div className="grid grid-cols-12 items-end gap-x-8 gap-y-8">
-            {/* Left Col: Giant Cinematic Title */}
-            <div className="col-span-12 lg:col-span-7 xl:col-span-8">
-              <div className="mb-2 flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.3em] text-primary/90 sm:text-xs">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                <span>Visual Arts Atelier & Production</span>
-              </div>
+          {ch}
+        </motion.span>
+      ))}
+    </span>
+  )
+}
 
-              <h1
-                className="relative text-[24vw] font-medium leading-[0.82] tracking-[-0.07em] sm:text-[22vw] md:text-[20vw] lg:text-[18vw] xl:text-[17vw]"
-                style={{ color: CREAM }}
-              >
-                <WordsPullUp text="Prisma" showAsterisk />
-              </h1>
-            </div>
+export default function Hero({ ready }: { ready: boolean }) {
+  const ref = useRef<HTMLElement>(null)
+  const [role, setRole] = useState(0)
 
-            {/* Right Col: Studio Manifesto, Tags & Buttons */}
-            <div className="col-span-12 flex flex-col gap-6 lg:col-span-5 xl:col-span-4 lg:items-start">
-              {/* Studio Manifesto / Bio */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4, ease: EASE }}
-                className="space-y-3"
-              >
-                <p
-                  className="max-w-lg text-sm font-normal text-primary/80 sm:text-base md:text-[17px]"
-                  style={{ lineHeight: 1.4 }}
-                >
-                  Prisma is an independent collective of directors, cinematographers, and visual
-                  architects sculpting boundary-pushing films, immersive narratives, and refined
-                  sensory worlds.
-                </p>
+  const mxRaw = useMotionValue(0)
+  const myRaw = useMotionValue(0)
+  const mx = useSpring(mxRaw, { stiffness: 60, damping: 20 })
+  const my = useSpring(myRaw, { stiffness: 60, damping: 20 })
 
-                {/* Subtle Pills */}
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] tracking-wider text-primary/80 backdrop-blur-sm sm:text-[11px]">
-                    4K Master Grade
-                  </span>
-                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] tracking-wider text-primary/80 backdrop-blur-sm sm:text-[11px]">
-                    Direction & VFX
-                  </span>
-                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] tracking-wider text-primary/80 backdrop-blur-sm sm:text-[11px]">
-                    Global Atelier
-                  </span>
-                </div>
-              </motion.div>
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const titleY = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
 
-              {/* Action Buttons Cluster */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6, ease: EASE }}
-                className="flex flex-wrap items-center gap-3 sm:gap-4"
-              >
-                {/* Primary Button */}
-                <a
-                  href="#manifesto"
-                  data-cursor="ENTER"
-                  className="group relative flex items-center gap-3 overflow-hidden rounded-full bg-primary py-2 pl-7 pr-2 text-sm font-semibold text-black shadow-lg transition-all duration-300 hover:bg-[#F2F1E4] hover:shadow-primary/20 sm:py-2.5 sm:pl-8 sm:pr-2.5 sm:text-base"
-                >
-                  <span>Explore The Studio</span>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-[#E1E0CC] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-45 sm:h-11 sm:w-11">
-                    <ArrowUpRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </span>
-                </a>
+  useEffect(() => {
+    const id = setInterval(() => setRole((r) => (r + 1) % ROLES.length), 2400)
+    return () => clearInterval(id)
+  }, [])
 
-                {/* Secondary Button */}
-                <a
-                  href="#works"
-                  data-cursor="REEL"
-                  className="group flex items-center gap-2.5 rounded-full bg-black/40 px-5 py-3 text-xs font-medium text-[#E1E0CC] backdrop-blur-md transition-all duration-300 hover:bg-white/15 sm:px-6 sm:py-3.5 sm:text-sm"
-                >
-                  <Play className="h-3.5 w-3.5 fill-current text-primary transition-transform duration-300 group-hover:scale-110" />
-                  <span>Showreel &apos;26</span>
-                </a>
-              </motion.div>
-            </div>
-          </div>
+  return (
+    <section
+      id="top"
+      ref={ref}
+      onPointerMove={(e) => {
+        mxRaw.set(e.clientX / window.innerWidth - 0.5)
+        myRaw.set(e.clientY / window.innerHeight - 0.5)
+      }}
+      className="relative flex h-[100svh] min-h-[640px] items-center justify-center overflow-hidden bg-ink"
+    >
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[60vw] w-[60vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[140px]" />
+
+      {SHOTS.map((s, i) => (
+        <FloatingShot key={s.src} shot={s} index={i} mx={mx} my={my} scrollOut={scrollYProgress} ready={ready} />
+      ))}
+
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(10,10,12,0.85)_20%,rgba(10,10,12,0.2)_70%)]" />
+      <div className="grain pointer-events-none absolute inset-0 opacity-[0.06]" />
+
+      <motion.div style={{ y: titleY, opacity: titleOpacity }} className="relative z-10 px-4 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={ready ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 1, ease: EASE_OUT, delay: 0.2 }}
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-cream/70 backdrop-blur-md"
+        >
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+          Yazılım Mühendisi · Girişimci · Ankara
         </motion.div>
 
-        {/* Live Frame Counter & Scroll Prompt */}
-        <motion.div
-          style={{ opacity: scrollIndicatorOpacity }}
-          className="pointer-events-none absolute bottom-8 right-8 z-30 hidden items-center gap-4 rounded-full bg-black/60 px-4 py-2 text-xs text-[#E1E0CC]/80 backdrop-blur-xl md:flex"
-        >
-          <div className="flex items-center gap-2 border-r border-white/10 pr-3 font-mono text-[11px] text-primary/70">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-            <span>FRAME {String(activeFrameDisplay).padStart(3, '0')} / 241</span>
-          </div>
+        <h1 className="font-display font-extrabold leading-[0.85] tracking-[-0.05em] text-cream">
+          <SplitLetters text="Kağan" ready={ready} delay={0.3} className="text-[22vw] sm:text-[17vw] lg:text-[14vw]" />
+          <br />
+          <SplitLetters
+            text="Karkı"
+            ready={ready}
+            delay={0.5}
+            className="font-serif text-[22vw] font-normal italic tracking-[-0.03em] text-accent sm:text-[17vw] lg:text-[14vw]"
+          />
+        </h1>
 
-          <div className="flex items-center gap-1.5 text-xs text-[#E1E0CC]/90">
-            <span>Scroll to enter screen</span>
-            <ChevronDown className="h-3.5 w-3.5 animate-bounce text-primary" />
-          </div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={ready ? { opacity: 1 } : undefined}
+          transition={{ duration: 1, delay: 1.1 }}
+          className="mx-auto mt-6 max-w-xl text-lg text-cream/70 sm:text-2xl"
+        >
+          <span className="block">Gerçek kullanıcılar için</span>
+          <span className="relative block h-[1.4em] overflow-hidden">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={role}
+                initial={{ y: '100%', opacity: 0 }}
+                animate={{ y: '0%', opacity: 1 }}
+                exit={{ y: '-100%', opacity: 0 }}
+                transition={{ duration: 0.6, ease: EASE_OUT }}
+                className="absolute inset-x-0 block whitespace-nowrap"
+              >
+                <span className="font-serif text-[1.15em] italic text-cream">{ROLES[role]}</span> geliştiriyorum.
+              </motion.span>
+            </AnimatePresence>
+          </span>
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={ready ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 1, ease: EASE_OUT, delay: 1.3 }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-3"
+        >
+          <Magnetic>
+            <button
+              type="button"
+              data-cursor="Keşfet"
+              onClick={() => scrollToId('projeler')}
+              className="group flex items-center gap-3 rounded-full bg-accent py-2 pl-6 pr-2 font-medium text-ink"
+            >
+              Projelerime bak
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-accent transition-transform duration-500 group-hover:rotate-45">
+                <ArrowUpRight className="h-4 w-4" />
+              </span>
+            </button>
+          </Magnetic>
+          <Magnetic>
+            <button
+              type="button"
+              onClick={() => scrollToId('iletisim')}
+              className="rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-cream backdrop-blur-md transition-colors hover:bg-white/15"
+            >
+              İletişime geç
+            </button>
+          </Magnetic>
         </motion.div>
-      </div>
+      </motion.div>
+
+      <motion.button
+        type="button"
+        onClick={() => scrollToId('hakkimda')}
+        initial={{ opacity: 0 }}
+        animate={ready ? { opacity: 1 } : undefined}
+        transition={{ delay: 1.8 }}
+        className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-cream/50"
+      >
+        Kaydır
+        <motion.span animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
+          <ArrowDown className="h-4 w-4" />
+        </motion.span>
+      </motion.button>
     </section>
   )
 }

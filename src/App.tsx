@@ -1,41 +1,36 @@
 import { useState } from 'react'
-import CustomCursor from './components/CustomCursor'
+import SmoothScroll from './components/SmoothScroll'
+import Cursor from './components/Cursor'
 import Preloader from './components/Preloader'
+import Nav from './components/Nav'
 import Hero from './components/Hero'
-import StudioManifesto from './components/StudioManifesto'
-import StudioWorks from './components/StudioWorks'
-import StudioContact from './components/StudioContact'
+import ScreenDive from './components/ScreenDive'
+import About from './components/About'
+import LogoMarquee from './components/LogoMarquee'
+import GaziSpotlight from './components/GaziSpotlight'
+import Projects from './components/Projects'
+import Ventures from './components/Ventures'
+import Contact from './components/Contact'
 
 export default function App() {
-  const [loadProgress, setLoadProgress] = useState(0)
-  const [preloaderComplete, setPreloaderComplete] = useState(false)
+  const [ready, setReady] = useState(false)
 
   return (
     <>
-      {/* Interactive custom cursor with trailing spring physics */}
-      <CustomCursor />
+      <SmoothScroll />
+      <Cursor />
+      {!ready && <Preloader onDone={() => setReady(true)} />}
+      <Nav />
 
-      {/* Cinematic intro preloader */}
-      {!preloaderComplete && (
-        <Preloader
-          progress={loadProgress}
-          onComplete={() => setPreloaderComplete(true)}
-        />
-      )}
-
-      {/* Main Website Flow */}
-      <main className="bg-black text-[#E1E0CC]">
-        {/* 1. Hero scroll frame scrub: ends on pure white */}
-        <Hero onProgress={setLoadProgress} />
-
-        {/* 2. Studio Manifesto: starts seamlessly on pure white */}
-        <StudioManifesto />
-
-        {/* 3. Selected Cinematic Works */}
-        <StudioWorks />
-
-        {/* 4. Atelier Contact & Collaboration Portal */}
-        <StudioContact />
+      <main>
+        <Hero ready={ready} />
+        <ScreenDive ready={ready} />
+        <About />
+        <LogoMarquee />
+        <GaziSpotlight />
+        <Projects />
+        <Ventures />
+        <Contact />
       </main>
     </>
   )
